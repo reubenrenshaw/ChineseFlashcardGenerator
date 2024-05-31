@@ -8,7 +8,7 @@ import deepl
 from cedict_utils.cedict import CedictParser
 
 
-translator = deepl.Translator("913e82d9-45a2-4580-b169-62566762cd72:fx")
+translator = deepl.Translator(API_KEY)
 
 parser = CedictParser()
 parser.read_file('cedict_ts.u8')
