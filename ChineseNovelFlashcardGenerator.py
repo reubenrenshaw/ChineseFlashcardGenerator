@@ -1,61 +1,40 @@
-"""
-original
+import opencc
 import re
-import translator
-import AnkiGenerator
+from translator import translate_block
+import AnkiGenerator  
 import os
 import jieba
+import threading
 
-def contains_only_zhhz(word):
-    for char in word:
-        if(not re.match(r'[\u5e00-\u9fff]', char)):
-            return False
-    return True
+# Block Size for threading
+block_size = 5000
 
-def main():
-
-    set_of_unique_chars = set()
-    char_dict = dict()
-    with open('text.txt', 'r', encoding = 'utf-8', errors = 'replace') as file:
-        text = file.read()
-        words = jieba.cut(text)
-        for word in words:
-            if(contains_only_zhhz(word)):
-                print("Translating: " + word)
-                char_dict[word] = translator.translate_word(word)
-        AnkiGenerator.package_deck()    
-    
-
-if __name__ == "__main__":
-    main()
-"""
-import re
-import translator  # Assuming you have a custom 'translator' module
-import AnkiGenerator  # Assuming you have a custom 'AnkiGenerator' module
-import os
-import jieba
-
-# Regex optimization: Pre-compile the pattern for better performance.
-zhhz_pattern = re.compile(r'[\u4e00-\u9fff]+')  # Match one or more CJK characters
-
-def contains_only_zhhz(word):
-    return bool(zhhz_pattern.fullmatch(word))  # More concise and efficient check
+# opencc converter initializer
+converter = opencc.OpenCC('t2s.json')
 
 def main():
     char_dict = {}
-    i = 0
+    word_count = 0
     with open('text.txt', 'r', encoding='utf-8', errors='replace') as file:
-        words = jieba.cut(file.read())  # No need for intermediate 'text' variable
+        words = list(jieba.cut(converter.convert(file.read())))
+        unique_text = set()
         for word in words:
-            if contains_only_zhhz(word):
-                i += 1
-                if(i > 100):
-                    break
-                if(not word in char_dict):
-                    print("Translating:", word)
-                    char_dict[word] = translator.translate_word(word)
+            unique_text.add(word)
+        unique_text = list(unique_text)
+        #unique_text = unique_text[0: 100]
+        num_blocks = int((len(unique_text) / block_size) + 0.5)
+        threads = []
+        for i in range(0, num_blocks):
+            block = unique_text[i * block_size: i * block_size + block_size]
+            thread = threading.Thread(target = translate_block, args = (block, word_count))
+            threads.append(thread)
+            thread.start()
 
-    AnkiGenerator.create_flashcards(char_dict)
+        for thread in threads:
+            thread.join()
+             
+                
+    AnkiGenerator.package_deck()
 
 if __name__ == "__main__":
     main()
