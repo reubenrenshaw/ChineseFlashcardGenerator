@@ -1,0 +1,7 @@
+genanki
+requests
+opencc
+jieba
+deepl
+cedict
+cedict-utils
