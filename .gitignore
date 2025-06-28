@@ -1,7 +1,8 @@
 /ankideck.apkg
-/cedict_ts.u8
 /ChineseFlashcardGenerator.code-workspace
 /main.py
 /text.txt
 /APIKEY.py
 /__pycache__
+/test.txt
+/venv

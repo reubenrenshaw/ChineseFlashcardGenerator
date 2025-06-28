@@ -14,7 +14,7 @@ zhhz_pattern = re.compile(r'[\u4e00-\u9fff]+')  # Match one or more CJK characte
 translator = deepl.Translator(APIKEY.API_KEY)
 
 parser = CedictParser()
-parser.read_file('cedict_ts.u8')
+parser.read_file('cedict/cedict_ts.u8')
 #entries = parser.parse()
 cedict_dict = {}
 for entry in parser.parse():
