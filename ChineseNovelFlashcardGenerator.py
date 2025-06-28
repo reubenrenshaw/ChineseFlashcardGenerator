@@ -18,7 +18,7 @@ def main():
     with open('text.txt', 'r', encoding='utf-8', errors='replace') as file:
         #test = '你是我的小苹果'
         unique_text = set()
-        words = list(jieba.cut(converter.convert(file.read())))
+        words = list(jieba.cut(file.read()))
         #words = list(jieba.cut(test))
         unique_text = set()
         for word in words:
